@@ -51,7 +51,7 @@ footer{border-top:1px solid #463263;background:rgba(7,7,21,.72);padding:23px 0}.
 <div class="card-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3"><rect x="7" y="9" width="50" height="36" rx="4"/><path d="M25 54h14M32 45v9M15 17h34"/></svg></div>
 <h2>ApexOrbit Tool</h2>
 <p data-tr="Standart sürüm · Windows" data-en="Standard version · Windows">Standart sürüm · Windows</p>
-<a id="tool-link" class="btn" href="https://github.com/leo07271/DFN-Updates/releases/download/do-helper-cef-v27/DO-Helper-Windows-x64-v27.zip" data-tr="Dosyayı İndir" data-en="Download File"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m-5-5 5 5 5-5M5 18v3h14v-3"/></svg><span>Dosyayı İndir</span></a>
+<a id="tool-link" class="btn" href="https://github.com/leo07271/ApexOrbit-Updates/releases/download/do-helper-cef-v27/DO-Helper-Windows-x64-v27.zip" data-tr="Dosyayı İndir" data-en="Download File"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m-5-5 5 5 5-5M5 18v3h14v-3"/></svg><span>Dosyayı İndir</span></a>
 <span class="version" id="tool-version">v27 · DO-Helper-Windows-x64-v27.zip</span>
 </article>
 <article class="card">
@@ -78,7 +78,7 @@ footer{border-top:1px solid #463263;background:rgba(7,7,21,.72);padding:23px 0}.
   var fallback={
     name:"DO-Helper-Windows-x64-v27.zip",
     version:"v27",
-    url:"https://github.com/leo07271/DFN-Updates/releases/download/do-helper-cef-v27/DO-Helper-Windows-x64-v27.zip"
+    url:"https://github.com/leo07271/ApexOrbit-Updates/releases/download/do-helper-cef-v27/DO-Helper-Windows-x64-v27.zip"
   };
   var current=fallback;
   function render(){
@@ -96,7 +96,7 @@ footer{border-top:1px solid #463263;background:rgba(7,7,21,.72);padding:23px 0}.
   document.getElementById("tr").addEventListener("click",function(){lang="tr";render()});
   document.getElementById("en").addEventListener("click",function(){lang="en";render()});
   render();
-  fetch("https://api.github.com/repos/leo07271/DFN-Updates/releases?per_page=25",{
+  fetch("https://api.github.com/repos/leo07271/ApexOrbit-Updates/releases?per_page=25",{
     headers:{"Accept":"application/vnd.github+json"}
   })
   .then(function(r){if(!r.ok)throw Error("GitHub release lookup failed");return r.json()})
