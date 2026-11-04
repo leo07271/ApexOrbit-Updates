@@ -51,8 +51,8 @@ footer{border-top:1px solid #463263;background:rgba(7,7,21,.72);padding:23px 0}.
 <div class="card-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3"><rect x="7" y="9" width="50" height="36" rx="4"/><path d="M25 54h14M32 45v9M15 17h34"/></svg></div>
 <h2>ApexOrbit Tool</h2>
 <p data-tr="Standart sürüm · Windows" data-en="Standard version · Windows">Standart sürüm · Windows</p>
-<a id="tool-link" class="btn" href="https://github.com/leo07271/DFN-Updates/releases" target="_blank" rel="noopener noreferrer" data-tr="Sürümleri Gör" data-en="View Releases"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m-5-5 5 5 5-5M5 18v3h14v-3"/></svg><span>Sürümleri Gör</span></a>
-<span class="version" id="tool-version" data-tr="Sürüm bilgisi kontrol ediliyor..." data-en="Checking release information...">Sürüm bilgisi kontrol ediliyor...</span>
+<a id="tool-link" class="btn" href="https://github.com/leo07271/DFN-Updates/releases/download/do-helper-cef-v27/DO-Helper-Windows-x64-v27.zip" data-tr="Dosyayı İndir" data-en="Download File"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m-5-5 5 5 5-5M5 18v3h14v-3"/></svg><span>Dosyayı İndir</span></a>
+<span class="version" id="tool-version">v27 · DO-Helper-Windows-x64-v27.zip</span>
 </article>
 <article class="card">
 <div class="card-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3"><path d="M33 5 9 19l3 27 22 13 23-14-2-27L33 5zM9 19l26 14 22-15M35 33l-1 26M33 5l-1 26M12 46l22-13"/></svg></div>
@@ -73,42 +73,48 @@ footer{border-top:1px solid #463263;background:rgba(7,7,21,.72);padding:23px 0}.
 <footer><div class="wrap foot"><a class="brand" href="#" style="font-size:15px"><svg class="logo" viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M51 8L13 84h17l21-42 20 42h18z" fill="#f4f0ff"/><ellipse cx="53" cy="64" rx="46" ry="14" transform="rotate(-22 53 64)" stroke="#b25cff" stroke-width="7"/></svg><span>APEX<span>ORBIT</span></span></a><small>© 2026 ApexOrbit · Official Download Center</small></div></footer>
 <script>
 (function(){
-  var lang="tr", page="https://github.com/leo07271/DFN-Updates/releases";
-  var currentAsset=null, status="pending";
-  var labels={
-    tr:{download:"Dosyayı İndir",list:"Sürümleri Gör",missing:"İndirme dosyası henüz bulunamadı.",error:"Sürüm bilgisi alınamadı. GitHub üzerinden kontrol et.",pending:"Sürüm bilgisi kontrol ediliyor..."},
-    en:{download:"Download File",list:"View Releases",missing:"No download asset found yet.",error:"Unable to check releases. Please see GitHub.",pending:"Checking release information..."}
+  "use strict";
+  var lang="tr";
+  var fallback={
+    name:"DO-Helper-Windows-x64-v27.zip",
+    version:"v27",
+    url:"https://github.com/leo07271/DFN-Updates/releases/download/do-helper-cef-v27/DO-Helper-Windows-x64-v27.zip"
   };
+  var current=fallback;
   function render(){
     document.documentElement.lang=lang;
     document.getElementById("tr").setAttribute("aria-pressed",String(lang==="tr"));
     document.getElementById("en").setAttribute("aria-pressed",String(lang==="en"));
     document.querySelectorAll("[data-tr][data-en]").forEach(function(el){
-      if(el.id!=="tool-link" && el.id!=="tool-version")el.textContent=el.getAttribute("data-"+lang);
+      if(el.id!=="tool-link")el.textContent=el.getAttribute("data-"+lang);
     });
-    var btn=document.getElementById("tool-link");
-    var version=document.getElementById("tool-version");
-    btn.href=currentAsset?currentAsset.browser_download_url:page;
-    btn.querySelector("span").textContent=currentAsset?labels[lang].download:labels[lang].list;
-    version.textContent=currentAsset?(currentAsset.version+" · "+currentAsset.name):(status==="pending"?labels[lang].pending:labels[lang][status]);
+    var link=document.getElementById("tool-link");
+    link.href=current.url;
+    link.querySelector("span").textContent=lang==="tr"?"Dosyayı İndir":"Download File";
+    document.getElementById("tool-version").textContent=current.version+" · "+current.name;
   }
   document.getElementById("tr").addEventListener("click",function(){lang="tr";render()});
   document.getElementById("en").addEventListener("click",function(){lang="en";render()});
-  fetch("https://api.github.com/repos/leo07271/DFN-Updates/releases?per_page=25",{headers:{Accept:"application/vnd.github+json"}})
-    .then(function(r){if(!r.ok)throw Error("release fetch failed");return r.json()})
-    .then(function(releases){
-      var valid=/\.(zip|exe|msi|7z|rar)$/i;
-      releases.filter(function(r){return !r.draft && !r.prerelease}).some(function(release){
-        return (release.assets||[]).some(function(a){
-          if(!a.browser_download_url||!valid.test(a.name)||/unity/i.test(a.name+" "+release.name+" "+release.tag_name))return false;
-          currentAsset={name:a.name,version:release.tag_name,browser_download_url:a.browser_download_url};
-          return true;
-        });
-      });
-      status="missing";render();
-    })
-    .catch(function(){status="error";render()});
   render();
+  fetch("https://api.github.com/repos/leo07271/DFN-Updates/releases?per_page=25",{
+    headers:{"Accept":"application/vnd.github+json"}
+  })
+  .then(function(r){if(!r.ok)throw Error("GitHub release lookup failed");return r.json()})
+  .then(function(releases){
+    // Only use a full Windows installation asset. Never use CEF updater or Unity files.
+    var fullInstall=/windows[-_ ]?x64|full[-_ ]?(?:install|setup)|(?:installer|setup)[-_ ]/i;
+    var found=null;
+    releases.filter(function(r){return !r.draft&&!r.prerelease}).some(function(release){
+      return (release.assets||[]).some(function(a){
+        if(!a.browser_download_url||!/\.(zip|exe|msi|7z)$/i.test(a.name)||
+           !fullInstall.test(a.name)||/unity|cef/i.test(a.name))return false;
+        found={name:a.name,version:release.tag_name,url:a.browser_download_url};
+        return true;
+      });
+    });
+    if(found){current=found;render();}
+  })
+  .catch(function(){/* Keep the known working direct download URL. */});
 })();
 </script>
 </body>
